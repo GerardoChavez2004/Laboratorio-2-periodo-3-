@@ -1,0 +1,107 @@
+table 'public operaciones'
+	lineageTag: 31e1929a-a8be-4744-91d1-5fadc20b6da0
+
+	column operacion_id
+		dataType: int64
+		formatString: 0
+		lineageTag: e2a09a4c-afd9-4a17-af5d-71d385e458d7
+		summarizeBy: none
+		sourceColumn: operacion_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column cliente_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 1a04c73e-3abf-4091-8142-263e0b90c58e
+		summarizeBy: none
+		sourceColumn: cliente_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column sede_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 586a9143-8482-4657-82b8-68518c73ca9b
+		summarizeBy: none
+		sourceColumn: sede_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 72b52fc4-d159-4f2a-a936-822b73c88b76
+		summarizeBy: none
+		sourceColumn: fecha
+
+		variation Variación
+			isDefault
+			relationship: 64004b50-bf39-44ee-883b-bae502fedecf
+			defaultHierarchy: LocalDateTable_5087f874-517b-4b86-a3fe-ee27adeaaaed.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column estado
+		dataType: string
+		lineageTag: 31cf2b5f-6e6c-40ac-a24e-a69cfa8cae9f
+		summarizeBy: none
+		sourceColumn: estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column canal
+		dataType: string
+		lineageTag: a3038ef8-53fa-4fe4-b199-a628468fc8c6
+		summarizeBy: none
+		sourceColumn: canal
+
+		annotation SummarizationSetBy = Automatic
+
+	column actualizado_en
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 33f94a51-a123-4709-bc7f-07d3f93d563d
+		summarizeBy: none
+		sourceColumn: actualizado_en
+
+		variation Variación
+			isDefault
+			relationship: b4b46776-93fb-46d9-84e6-aa25e8e89314
+			defaultHierarchy: LocalDateTable_4cd6c077-7632-46ed-93f9-13754f5a7b92.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes = DATE(YEAR('public operaciones'[fecha]), MONTH('public operaciones'[fecha]), 1)
+		formatString: mmmm "de" yyyy
+		lineageTag: 01123835-7d50-44e1-83f9-cda4f566eaa3
+		summarizeBy: none
+
+		variation Variación
+			isDefault
+			relationship: d5160d09-61a5-4557-82d2-96c52f0db7d7
+			defaultHierarchy: LocalDateTable_a05dd566-beae-409d-8d7b-64f2afd2f6ea.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Mes aaaa-mm' = FORMAT('public operaciones'[fecha], "yyyy-MM")
+		lineageTag: 38adb00c-8a41-44e9-830c-c400e41a76dc
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'public operaciones' = m
+		mode: import
+		source =
+				let
+				  Origen = PostgreSQL.Database("ep-snowy-recipe-bdpm6oz5-pooler.c-8.us-east-2.aws.neon.tech", "clinica"),
+				  #"Navegación 1" = Origen{[Schema = "public", Item = "operaciones"]}[Data]
+				in
+				  #"Navegación 1"
+
+	annotation PBI_ResultType = Table
+

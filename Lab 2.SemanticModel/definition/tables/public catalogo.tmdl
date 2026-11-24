@@ -1,0 +1,104 @@
+table 'public catalogo'
+	lineageTag: 5f7f2eb8-2409-479b-9f92-af74f6ff28a5
+
+	measure Operaciones =
+			
+			DISTINCTCOUNT('public detalle_operacion'[operacion_id])
+		formatString: 0
+		lineageTag: 0f395851-42b6-428a-bfaa-2ad10d2f4973
+
+	measure Importe =
+			
+			SUMX('public detalle_operacion',
+			     'public detalle_operacion'[cantidad] * 'public detalle_operacion'[precio_unitario]
+			     - 'public detalle_operacion'[descuento])
+		lineageTag: 9158e3c4-8c09-480a-863e-07a5522a0dfe
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Ticket promedio' =
+			
+			DIVIDE([Importe completado], [Operaciones completadas])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 46243b46-81fc-45b5-ae3b-380402502ab7
+
+		annotation PBI_FormatHint = {"currencyCulture":"es-US"}
+
+	measure 'Importe completado' =
+			
+			CALCULATE([Importe], 'public operaciones'[estado] = "completada")
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 76c68662-da2e-4593-9209-5f444c55df79
+
+		annotation PBI_FormatHint = {"currencyCulture":"es-US"}
+
+	measure 'Operaciones completadas' =
+			
+			CALCULATE([Operaciones], 'public operaciones'[estado] = "completada")
+		formatString: 0
+		lineageTag: 03d6be29-0c88-419b-a7ed-74fd96cf693e
+
+	measure 'Tasa de completadas' =
+			
+			DIVIDE(
+			    CALCULATE(COUNTROWS('public operaciones'), 'public operaciones'[estado] = "completada"),
+			    COUNTROWS('public operaciones')
+			)
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 4a28c483-7cb4-41bb-9b10-f0e95eb4e3c2
+
+	measure 'Operaciones sin detalle' =
+			
+			COUNTROWS(
+			    FILTER('public operaciones',
+			           ISBLANK(CALCULATE(COUNTROWS('public detalle_operacion'))))
+			)
+		formatString: 0
+		lineageTag: c14e2682-750c-4f5a-8b9a-8f52def58ec6
+
+	column producto_id
+		dataType: int64
+		formatString: 0
+		lineageTag: b7f33a0f-7140-429f-86b8-d8a0c0cbaaa7
+		summarizeBy: none
+		sourceColumn: producto_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre
+		dataType: string
+		lineageTag: d3a8cdfb-c8fc-4000-9b01-bd3ecf8145f9
+		summarizeBy: none
+		sourceColumn: nombre
+
+		annotation SummarizationSetBy = Automatic
+
+	column categoria
+		dataType: string
+		lineageTag: e01dfa14-1c37-42eb-9c60-53f4403a6028
+		summarizeBy: none
+		sourceColumn: categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column precio_lista
+		dataType: double
+		lineageTag: 65c89645-4ab7-4e15-8e49-aa8db3bdbb6c
+		summarizeBy: none
+		sourceColumn: precio_lista
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'public catalogo' = m
+		mode: import
+		source =
+				let
+				  Origen = PostgreSQL.Database("ep-snowy-recipe-bdpm6oz5-pooler.c-8.us-east-2.aws.neon.tech", "clinica"),
+				  #"Navegación 1" = Origen{[Schema = "public", Item = "catalogo"]}[Data]
+				in
+				  #"Navegación 1"
+
+	annotation PBI_ResultType = Table
+

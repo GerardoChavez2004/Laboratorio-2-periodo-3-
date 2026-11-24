@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "430e138d6f8c1bad94d9",
+  "position": {
+    "x": 545.57979334098729,
+    "y": 1021.7221584385763,
+    "z": 11000,
+    "height": 24.247990815154992,
+    "width": 772.62916188289319,
+    "tabOrder": 11000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Una operación puede incluir varios servicios: los conteos por servicio y categoría suman más que el total de 91 operaciones.",
+                    "textStyle": {
+                      "color": "#e6e6e6"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
